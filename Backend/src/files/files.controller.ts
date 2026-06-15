@@ -32,6 +32,11 @@ export class FilesController {
     return this.filesService.getLatestFiles();
   }
 
+  @Get('all')
+  async getAllFiles() {
+    return this.filesService.getAllFiles();
+  }
+
   @Get('download/:key')
   async downloadFile(@Param('key') key: string, @Res({ passthrough: true }) res: Response) {
     const fileStream = await this.filesService.downloadFile(key);

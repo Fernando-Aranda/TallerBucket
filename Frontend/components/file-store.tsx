@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Download, FileText, Image, Video, File, Filter, Search } from "lucide-react"
 import type { UploadedFile } from "./tamagotchi-screen"
 import { cn } from "@/lib/utils"
@@ -39,6 +39,11 @@ function formatSize(bytes: number) {
 export function FileStore({ files }: FileStoreProps) {
   const [filter, setFilter] = useState<FilterType>("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter, searchQuery, files.length])
 
   const filteredFiles = files.filter((file) => {
     if (searchQuery && !file.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
@@ -50,6 +55,20 @@ export function FileStore({ files }: FileStoreProps) {
     if (filter === "other") return !file.type.startsWith("image/") && !file.type.startsWith("video/") && !file.type.includes("text") && !file.type.includes("pdf") && !file.type.includes("document")
     return true
   })
+
+  const itemsPerPage = 3
+  const totalPages = Math.ceil(filteredFiles.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedFiles = filteredFiles.slice(startIndex, startIndex + itemsPerPage)
+
+  const pageGroup = Math.ceil(currentPage / 3)
+  const startPage = (pageGroup - 1) * 3 + 1
+  const endPage = Math.min(startPage + 2, totalPages)
+
+  const pages = []
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
+  }
 
   return (
     <div className="w-full flex flex-col h-full" style={{ height: "350px" }}>
@@ -63,7 +82,7 @@ export function FileStore({ files }: FileStoreProps) {
           letterSpacing: "0.1em",
         }}
       >
-        ★ TIENDA ★
+        ★ OBJETOS ★
       </div>
 
       {/* Filter Bar */}
@@ -132,8 +151,8 @@ export function FileStore({ files }: FileStoreProps) {
 
       {/* File List */}
       <div className="flex flex-col gap-3 overflow-y-auto pr-2 custom-scrollbar flex-1 pb-2">
-        {filteredFiles.length > 0 ? (
-          filteredFiles.map((file) => (
+        {paginatedFiles.length > 0 ? (
+          paginatedFiles.map((file) => (
             <div
               key={file.id}
               className="flex items-center gap-3 px-3 py-2 shrink-0"
@@ -205,6 +224,59 @@ export function FileStore({ files }: FileStoreProps) {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-2 shrink-0">
+          {startPage > 1 && (
+            <button
+              onClick={() => { playSound("select"); setCurrentPage(startPage - 1); }}
+              className="px-2 py-1 transition-all duration-75 active:scale-95"
+              style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(5px, 0.9vw, 7px)",
+                color: "var(--shell-border)",
+              }}
+            >
+              {"<"}
+            </button>
+          )}
+          {pages.map(p => (
+            <button
+              key={p}
+              onClick={() => { playSound("select"); setCurrentPage(p); }}
+              className={cn(
+                "flex items-center justify-center transition-all duration-75 active:scale-95",
+                currentPage === p ? "opacity-100" : "opacity-60 hover:opacity-100"
+              )}
+              style={{
+                width: "20px",
+                height: "20px",
+                background: currentPage === p ? "var(--shell-border)" : "transparent",
+                color: currentPage === p ? "var(--lcd-bg)" : "var(--shell-border)",
+                border: `2px solid var(--shell-border)`,
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(5px, 0.9vw, 7px)",
+              }}
+            >
+              {p}
+            </button>
+          ))}
+          {endPage < totalPages && (
+            <button
+              onClick={() => { playSound("select"); setCurrentPage(endPage + 1); }}
+              className="px-2 py-1 transition-all duration-75 active:scale-95"
+              style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(5px, 0.9vw, 7px)",
+                color: "var(--shell-border)",
+              }}
+            >
+              {">"}
+            </button>
+          )}
+        </div>
+      )}
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {

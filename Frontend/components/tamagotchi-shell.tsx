@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { TamagotchiScreen, type UploadedFile } from "./tamagotchi-screen"
 import { FileInventory } from "./file-inventory"
 import { FileStore } from "./file-store"
@@ -8,8 +8,40 @@ import { FileStore } from "./file-store"
 export function TamagotchiShell() {
   const [files, setFiles] = useState<UploadedFile[]>([])
 
-  const handleFilesUploaded = (newFiles: UploadedFile[]) => {
-    setFiles((prev) => [...prev, ...newFiles])
+  const fetchLatestFiles = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:3000/files/all")
+      const data = await res.json()
+      if (Array.isArray(data)) {
+        const mappedFiles: UploadedFile[] = data.map((f: any) => {
+          const ext = f.name.split('.').pop()?.toLowerCase() || ''
+          let mime = 'application/octet-stream'
+          if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) mime = 'image/' + ext
+          else if (['mp4', 'webm', 'ogg'].includes(ext)) mime = 'video/' + ext
+          else if (['txt', 'pdf', 'doc', 'docx'].includes(ext)) mime = 'text/plain'
+
+          return {
+            id: f.name,
+            name: f.name,
+            size: f.size,
+            type: mime,
+            url: `http://localhost:3000/files/download/${encodeURIComponent(f.name)}`,
+            uploadedAt: new Date(f.lastModified)
+          }
+        })
+        setFiles(mappedFiles)
+      }
+    } catch (e) {
+      console.error("Error fetching latest files", e)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchLatestFiles()
+  }, [fetchLatestFiles])
+
+  const handleFilesUploaded = () => {
+    fetchLatestFiles()
   }
 
   return (

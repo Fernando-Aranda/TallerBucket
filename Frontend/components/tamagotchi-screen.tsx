@@ -32,30 +32,37 @@ export function TamagotchiScreen({ onFilesUploaded }: TamagotchiScreenProps) {
   const triggerEat = useCallback((files: File[]) => {
     playSound("yummy")
 
-    const uploaded: UploadedFile[] = files.map((f) => ({
-      id: Math.random().toString(36).slice(2),
-      name: f.name,
-      size: f.size,
-      type: f.type,
-      url: URL.createObjectURL(f),
-      uploadedAt: new Date(),
-    }))
-
     setPetState("eating")
     setStatusText("¡ÑAM ÑAM\nÑAM!")
 
     if (eatTimeout.current) clearTimeout(eatTimeout.current)
-    eatTimeout.current = setTimeout(() => {
-      playSound("satisfied")
-      setPetState("happy")
-      setStatusText("¡QUÉ RICO!\n¡GRACIAS!")
-      onFilesUploaded(uploaded)
 
+    const uploadPromises = files.map(async (file) => {
+      const formData = new FormData()
+      formData.append("file", file)
+      try {
+        await fetch("http://localhost:3000/files/upload", {
+          method: "POST",
+          body: formData,
+        })
+      } catch (error) {
+        console.error("Error al subir archivo:", error)
+      }
+    })
+
+    Promise.all(uploadPromises).then(() => {
       eatTimeout.current = setTimeout(() => {
-        setPetState("idle")
-        setStatusText("¡SUELTA ARCHIVOS\nPARA ALIMENTARME!")
-      }, 2000)
-    }, 1200)
+        playSound("satisfied")
+        setPetState("happy")
+        setStatusText("¡QUÉ RICO!\n¡GRACIAS!")
+        onFilesUploaded([])
+
+        eatTimeout.current = setTimeout(() => {
+          setPetState("idle")
+          setStatusText("¡SUELTA ARCHIVOS\nPARA ALIMENTARME!")
+        }, 2000)
+      }, 1200)
+    })
   }, [onFilesUploaded])
 
   const handleDrop = useCallback(

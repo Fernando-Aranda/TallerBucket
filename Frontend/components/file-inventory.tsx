@@ -30,7 +30,7 @@ function truncateName(name: string, max = 16) {
 }
 
 export function FileInventory({ files }: FileInventoryProps) {
-  const recent = files.slice(-3).reverse()
+  const recent = files.slice(0, 3)
 
   return (
     <div className="w-full">
@@ -44,7 +44,7 @@ export function FileInventory({ files }: FileInventoryProps) {
           letterSpacing: "0.1em",
         }}
       >
-        ★ Estómago ★
+        ★ ESTÓMAGO ★
       </div>
 
       {/* Inventory slots */}

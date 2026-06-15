@@ -69,6 +69,28 @@ export class FilesService {
     }
   }
 
+  // Obtener todos los archivos
+  async getAllFiles() {
+    const command = new ListObjectsV2Command({
+      Bucket: this.bucketName,
+    });
+
+    try {
+      const response = await this.s3Client.send(command);
+      const objects = response.Contents || [];
+
+      return objects
+        .sort((a, b) => (b.LastModified?.getTime() || 0) - (a.LastModified?.getTime() || 0))
+        .map((obj) => ({
+          name: obj.Key,
+          size: obj.Size,
+          lastModified: obj.LastModified,
+        }));
+    } catch (error) {
+      throw new InternalServerErrorException('Error al listar archivos', error.message);
+    }
+  }
+
   // 3. Descargar un archivo (retorna el Stream)
   async downloadFile(key: string): Promise<Readable> {
     const command = new GetObjectCommand({
