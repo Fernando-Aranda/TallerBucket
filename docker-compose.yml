@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: TallerBucket-localstack
+    image: localstack/localstack:3.8.0
+    ports:
+      - "127.0.0.1:4566:4566" # Puerto del Gateway de LocalStack (S3, etc.)
+      - "127.0.0.1:4510-4559:4510-4559" # Rango de puertos internos para servicios
+    environment:
+      - SERVICES=s3 # Solo habilitamos S3 para optimizar recursos
+      - DEBUG=1 # Muestra logs detallados en la consola
+      - ACTIVATE_PRO=0 # Desactiva funciones Pro para evitar que requiera licencia
+    volumes:
+      - "./localstack_data:/var/lib/localstack" # Persistencia de datos local
+      - "/var/run/docker.sock:/var/run/docker.sock" # Permite a LocalStack interactuar con Docker
