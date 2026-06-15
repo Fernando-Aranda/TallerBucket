@@ -41,7 +41,7 @@ export function TamagotchiScreen({ onFilesUploaded }: TamagotchiScreenProps) {
       const formData = new FormData()
       formData.append("file", file)
       try {
-        await fetch("http://localhost:3000/files/upload", {
+        await fetch("http://localhost:3001/files/upload", {
           method: "POST",
           body: formData,
         })

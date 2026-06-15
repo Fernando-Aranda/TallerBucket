@@ -10,7 +10,7 @@ export function TamagotchiShell() {
 
   const fetchLatestFiles = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:3000/files/all")
+      const res = await fetch("http://localhost:3001/files/all")
       const data = await res.json()
       if (Array.isArray(data)) {
         const mappedFiles: UploadedFile[] = data.map((f: any) => {
@@ -25,7 +25,7 @@ export function TamagotchiShell() {
             name: f.name,
             size: f.size,
             type: mime,
-            url: `http://localhost:3000/files/download/${encodeURIComponent(f.name)}`,
+            url: `http://localhost:3001/files/download/${encodeURIComponent(f.name)}`,
             uploadedAt: new Date(f.lastModified)
           }
         })
