@@ -7,8 +7,8 @@ Este proyecto es una aplicación full-stack que utiliza **LocalStack** para emul
 Asegúrate de tener instalados los siguientes componentes antes de comenzar:
 - [Docker](https://www.docker.com/products/docker-desktop) y Docker Compose
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
-- [Node.js](https://nodejs.org/es/) (Versión 18+ recomendada)
-- [pnpm](https://pnpm.io/es/) (Opcional, pero sugerido para el frontend basado en tu configuración) o `npm`
+- [Node.js](https://nodejs.org/es/)
+- [pnpm](https://pnpm.io/es/) o `npm`
 
 ---
 
