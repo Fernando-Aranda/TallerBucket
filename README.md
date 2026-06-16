@@ -21,7 +21,7 @@ Primero, levantaremos LocalStack, que proveerá el servicio de S3 localmente en 
 
 Abre una terminal en la raíz del proyecto y ejecuta:
 ```bash
-docker-compose up -d
+docker-compose up -d --build
 ```
 *Verifica que el contenedor `TallerBucket-localstack` esté en ejecución.*
 
