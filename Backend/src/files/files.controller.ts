@@ -11,10 +11,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 
-// 1. AÑADIMOS 'type' AQUÍ PARA SOLUCIONAR EL ERROR
 import type { Response, Express } from 'express';
-
-// 2. Mantenemos multer para que existan los tipos de archivo
 import 'multer';
 
 @Controller('files')

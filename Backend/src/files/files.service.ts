@@ -28,7 +28,6 @@ export class FilesService {
     });
   }
 
-  // 1. Subir archivo a S3
   async uploadFile(file: Express.Multer.File) {
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
@@ -45,7 +44,6 @@ export class FilesService {
     }
   }
 
-  // 2. Obtener los últimos 3 archivos ordenados por fecha de modificación
   async getLatestFiles() {
     const command = new ListObjectsV2Command({
       Bucket: this.bucketName,
@@ -55,7 +53,6 @@ export class FilesService {
       const response = await this.s3Client.send(command);
       const objects = response.Contents || [];
 
-      // Solución: Usamos ?. y || 0 para evitar errores si LastModified es undefined
       return objects
         .sort((a, b) => (b.LastModified?.getTime() || 0) - (a.LastModified?.getTime() || 0))
         .slice(0, 3)
@@ -69,7 +66,6 @@ export class FilesService {
     }
   }
 
-  // Obtener todos los archivos
   async getAllFiles() {
     const command = new ListObjectsV2Command({
       Bucket: this.bucketName,
@@ -91,7 +87,6 @@ export class FilesService {
     }
   }
 
-  // 3. Descargar un archivo (retorna el Stream)
   async downloadFile(key: string): Promise<Readable> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,

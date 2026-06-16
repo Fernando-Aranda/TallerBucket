@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-# 1. Configuración del proveedor apuntando a LocalStack
 provider "aws" {
   access_key                  = "test"
   secret_key                  = "test"
@@ -19,16 +18,14 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    s3 = "http://127.0.0.1:4566" # <--- Cambio clave aplicado aquí
+    s3 = "http://127.0.0.1:4566"
   }
 }
 
-# 2. La creación del bucket
 resource "aws_s3_bucket" "tallerBucket" {
   bucket = "tallerbucket-drive"
 }
 
-# 3. Configuración de permisos públicos haciendo referencia al nuevo ID
 resource "aws_s3_bucket_public_access_block" "tallerBucket_public_access" {
   bucket = aws_s3_bucket.tallerBucket.id 
 
